@@ -1,3 +1,5 @@
+name: ci
+
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
@@ -11,57 +13,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install --frozen-lockfile
 
       - name: Lint
         run: npx eslint ./src/
 
       - name: Tests unitaires
         run: |
-          npm test 2>&1 | tee test-output.txt
-          if grep -q "failed" test-output.txt; then
-            echo "::error::Des tests unitaires ont échoué"
-          else
-            echo "::notice::Tous les tests unitaires sont passés ✅"
-          fi
+          yarn test --reporter=default | tee test-output.txt
           echo "## 🧪 Résultats tests unitaires" >> $GITHUB_STEP_SUMMARY
           cat test-output.txt >> $GITHUB_STEP_SUMMARY
 
       - name: Audit dépendances
         run: |
-          npm audit --audit-level=moderate 2>&1 | tee audit-output.txt || true
-          echo "## 🔒 Audit des dépendances" >> $GITHUB_STEP_SUMMARY
-          cat audit-output.txt >> $GITHUB_STEP_SUMMARY
+          yarn audit --level moderate || true
 
-      - name: TruffleHog
-        run: |
-          trufflehog filesystem --json . > trufflehog_results.json || true
-          cat trufflehog_results.json
-
-      - name: Upload TruffleHog results
-        uses: actions/upload-artifact@v4
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
         with:
-          name: trufflehog-results
-          path: trufflehog_results.json
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
 
       - name: Build projet
-        run: npm run build
+        run: yarn build
 
       - name: Start Parcel server
-        run: npx parcel ./src/index.html &
+        run: yarn start &
 
       - name: Wait for server
         run: npx wait-on http://localhost:1234 --timeout 30000
 
       - name: Tests fonctionnels Cypress
         run: |
-          npx cypress run 2>&1 | tee cypress-output.txt
-          if grep -q "failing" cypress-output.txt; then
-            echo "::error::Des tests fonctionnels ont échoué"
-          else
-            echo "::notice::Tous les tests fonctionnels sont passés ✅"
-          fi
+          yarn test:e2e | tee cypress-output.txt
           echo "## 🌐 Résultats tests fonctionnels" >> $GITHUB_STEP_SUMMARY
           cat cypress-output.txt >> $GITHUB_STEP_SUMMARY
