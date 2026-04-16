@@ -1,11 +1,9 @@
 # Étape 1 — Build
 FROM node:20-alpine AS builder
 
+RUN corepack enable
+
 WORKDIR /app
-
-# Installe yarn
-RUN npm install -g yarn
-
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
