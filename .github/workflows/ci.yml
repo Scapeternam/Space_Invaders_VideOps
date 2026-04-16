@@ -42,14 +42,9 @@ jobs:
       - name: Build projet
         run: yarn build
 
-      - name: Start Parcel server
-        run: yarn start &
-
-      - name: Wait for server
-        run: npx wait-on http://localhost:1234 --timeout 30000
-
       - name: Tests fonctionnels Cypress
-        run: |
-          yarn test:e2e | tee cypress-output.txt
-          echo "## 🌐 Résultats tests fonctionnels" >> $GITHUB_STEP_SUMMARY
-          cat cypress-output.txt >> $GITHUB_STEP_SUMMARY
+        uses: cypress-io/github-action@v6
+        with:
+          start: yarn start
+          wait-on: 'http://localhost:1234'
+          wait-on-timeout: 30

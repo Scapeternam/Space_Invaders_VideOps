@@ -16,7 +16,7 @@ describe('distance', () => {
 });
 
 describe('toVector', () => {
-    it('toVector(angle:5 r:50, angle:10 r:100)', (polarVector: PolarVector) => {
+    it('toVector(angle:5 r:50, angle:10 r:100)', () => {
         const result = toVector({angle: 5, radius: 50}, {angle: 10, radius: 100});
         expect(result.x).toBeCloseTo(14.183109273161312);
         expect(result.y).toBeCloseTo(-47.946213733156924);
