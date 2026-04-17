@@ -47,4 +47,4 @@ jobs:
         with:
           start: yarn start
           wait-on: 'http://localhost:1234'
-          wait-on-timeout: 30
+          wait-on-timeout: 60
