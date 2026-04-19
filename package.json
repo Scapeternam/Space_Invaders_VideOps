@@ -2,8 +2,8 @@
   "scripts": {
     "test": "vitest run",
     "test:e2e": "cypress run",
-    "start": "parcel ./src/index.html",
-    "build": "rm -rf build && parcel build ./src/index.html --dist-dir build --public-url ./ --no-source-maps",
+    "start": "parcel ./index.html",
+    "build": "rm -rf build && parcel build ./index.html --dist-dir build --public-url ./ --no-source-maps",
     "zip": "rm -f bundle.zip && cd build && bestzip ../bundle.zip *",
     "bundle": "yarn build && yarn zip"
   },

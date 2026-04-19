@@ -26,14 +26,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build projet
+        run: yarn build
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Dossier à publier (adapte selon où sont tes fichiers HTML/JS)
-          path: '.'
+          path: 'build'
 
       - name: Deploy to GitHub Pages
         id: deployment
